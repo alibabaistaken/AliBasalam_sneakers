@@ -47,6 +47,9 @@ function updateCart() {
     cartList.innerHTML = cart.map(item => `<li>${item.name} - $${item.price}</li>`).join('');
     document.getElementById('total-price').textContent = `Total: $${total}`;
     document.getElementById('cart-count').innerText = cartCount;
+    document.getElementById('cartButton').onclick = function() {
+        window.location.href = '/cart';
+    };
 }
 
 //  filter sneakers by category
