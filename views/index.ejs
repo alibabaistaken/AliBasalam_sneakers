@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+    <title>Sneaker Shop</title>
+</head>
+<body>
+<header>
+    <div class="container">
+        <div class="logo">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGbJQQnYvjie3OCBE0LN23ieWu6Hyb-A10Aw&s" alt="Sneaker Shop Logo">
+        </div>
+        <div class="search-container">
+            <input type="text" class="search-box" id="search-input" placeholder="Search sneakers...">
+            <button class="search-button" onclick="searchSneakers()">Search</button>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="/new">NEW RELEASES</a></li>
+                <li><a href="#">JORDAN</a></li>
+                <li><a href="#">NIKE</a></li>
+                <li><a href="#">ADIDAS</a></li>
+                <li><a href="#">ASICS</a></li>
+                <li><a href="#">YEEZY</a></li>
+                <li><a href="#">SALE</a></li>
+            </ul>
+        </nav>
+        <div class="filter-list">
+            <a href="#" onclick="filterSneakers('all')">All</a>
+            <a href="#" onclick="filterSneakers('high-top')">High Top</a>
+            <a href="#" onclick="filterSneakers('low-top')">Low Top</a>
+        </div>
+        <div class="actions">
+            <button class="cart-icon" onclick="toggleCart()" aria-label="View Cart">🛒</button>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="hero-image">
+            <img src="https://www.stadiumgoods.com/BWStaticContent/54000/6a281fe7-d7f1-4cec-9430-9719d24ec43c_240924-dm7866-200-desktop.jpg" alt="Air Jordan 4 Fear">
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <h1>ALIBABA AND THE 40 SNEAKERS</h1>
+                <p>40 NEW SNEAKERS EVERYDAY</p>
+                <a href="/shop" class="shop-now">SHOP NOW</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <h2>Available Sneakers</h2>
+        <div id="product-grid" class="row">
+           
+            <div class="card" data-name="Air Jordan 4 Fear">
+                <img src="https://img.stadiumgoods.com/jordan-air-jordan-4-fear_23056650_55951336_800.jpg" alt="Air Jordan 4 Fear">
+                <h3>Air Jordan 4 Fear</h3>
+                <p>Price: $200</p>
+                <button onclick="addToCart('Air Jordan 4 Fear', 200)">Add to Cart</button>
+            </div>
+            <div class="card" data-name="Adidas Superstar Wales Bonner">
+                <img src="https://img.stadiumgoods.com/adidas-superstar-wales-bonner-white-croc_26684678_56222492_800.jpg" alt="Adidas Superstar Wales Bonner">
+                <h3>Adidas Superstar Wales Bonner</h3>
+                <p>Price: $150</p>
+                <button onclick="addToCart('Adidas Superstar Wales Bonner', 150)">Add to Cart</button>
+            </div>
+            <div class="card" data-name="Air Jordan 1 Travis Scott Medium Olive">
+                <img src="https://img.stadiumgoods.com/jordan-air-jordan-1-travis-scott-medium-olive_23139694_55271556_800.jpg" alt="Air Jordan 1 Travis Scott Medium Olive">
+                <h3>Air Jordan 1 Travis Scott</h3>
+                <p>Price: $300</p>
+                <button onclick="addToCart('Air Jordan 1 Travis Scott', 300)">Add to Cart</button>
+            </div>
+            <div class="card" data-name="Air Jordan 1 Low OG Travis Scott Velvet Brown">
+                <img src="https://img.stadiumgoods.com/jordan-air-jordan-1-low-og-travis-scott-velvet-brown_25525489_55951143_800.jpg" alt="Air Jordan 1 Low OG Travis Scott Velvet Brown">
+                <h3>Air Jordan 1 Low OG</h3>
+                <p>Price: $250</p>
+                <button onclick="addToCart('Air Jordan 1 Low OG', 250)">Add to Cart</button>
+            </div>
+            <div class="card" data-name="Air Jordan 4 Retro SB Pine Green">
+                <img src="https://img.stadiumgoods.com/jordan-air-jordan-4-retro-sb-pine-green_19672569_44943978_800.jpg" alt="Air Jordan 4 Retro SB Pine Green">
+                <h3>Air Jordan 4 Retro SB</h3>
+                <p>Price: $210</p>
+                <button onclick="addToCart('Air Jordan 4 Retro SB', 210)">Add to Cart</button>
+            </div>
+            <div class="card" data-name="Adidas Samba OG">
+                <img src="https://img.stadiumgoods.com/adidas-samba-og-wmns-maroon-cream-white_22847015_48351810_800.jpg" alt="Adidas Samba OG">
+                <h3>Adidas Samba OG</h3>
+                <p>Price: $120</p>
+                <button onclick="addToCart('Adidas Samba OG', 120)">Add to Cart</button>
+            </div>
+            <div class="card" data-name="Air Jordan 1 Retro High OG Chicago Lost and Found">
+                <img src="https://img.stadiumgoods.com/jordan-air-jordan-1-retro-high-og-chicago-lost-and-found_18316489_45638476_800.jpg" alt="Air Jordan 1 Retro High OG Chicago Lost and Found">
+                <h3>Air Jordan 1 Retro High OG</h3>
+                <p>Price: $350</p>
+                <button onclick="addToCart('Air Jordan 1 Retro High OG', 350)">Add to Cart</button>
+            </div>
+            <div class="card" data-name="Nike Air Force 1 Low Tiffany & Co">
+                <img src="https://img.stadiumgoods.com/nike-air-force-1-low-tiffany-and-co_19839241_45656788_800.jpg" alt="Nike Air Force 1 Low Tiffany & Co">
+                <h3>Nike Air Force 1 Tiffany & Co</h3>
+                <p>Price: $400</p>
+                <button onclick="addToCart('Nike Air Force 1 Tiffany & Co', 400)">Add to Cart</button>
+            </div>
+            <div class="card" data-name="Air Jordan 1 Off-White Chicago">
+                <img src="https://img.stadiumgoods.com/jordan-the-10-air-jordan-1-off-white-chicago_12959919_43160165_800.jpg" alt="Air Jordan 1 Off-White Chicago">
+                <h3>Air Jordan 1 Off-White Chicago</h3>
+                <p>Price: $500</p>
+                <button onclick="addToCart('Air Jordan 1 Off-White Chicago', 500)">Add to Cart</button>
+            </div>
+            <div class="card" data-name="Nike Louis Vuitton Air Force 1 Low">
+                <img src="https://img.stadiumgoods.com/nike-louis-vuitton-air-force-1-low-virgil-abloh-white-red_18769026_47679206_800.jpg" alt="Nike Louis Vuitton Air Force 1 Low">
+                <h3>Nike Louis Vuitton Air Force 1</h3>
+                <p>Price: $750</p>
+                <button onclick="addToCart('Nike Louis Vuitton Air Force 1', 750)">Add to Cart</button>
+            </div>
+            <div class="card" data-name="Air Jordan 1 High OG WMNS Satin Bred">
+                <img src="https://img.stadiumgoods.com/jordan-air-jordan-1-high-og-wmns-satin-bred_20609219_47408884_800.jpg" alt="Air Jordan 1 High OG WMNS Satin Bred">
+                <h3>Air Jordan 1 High OG WMNS</h3>
+                <p>Price: $260</p>
+                <button onclick="addToCart('Air Jordan 1 High OG WMNS', 260)">Add to Cart</button>
+            </div>
+            <div class="card" data-name="Nike Air Max 1 SC Jewel University Blue">
+                <img src="https://img.stadiumgoods.com/nike-air-max-1-sc-jewel-university-blue_20717324_44995178_800.jpg" alt="Nike Air Max 1 SC Jewel University Blue">
+                <h3>Nike Air Max 1 SC Jewel</h3>
+                <p>Price: $180</p>
+                <button onclick="addToCart('Nike Air Max 1 SC Jewel', 180)">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+</main>
