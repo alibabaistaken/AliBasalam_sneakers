@@ -6,7 +6,7 @@ function fetchSneakers() {
     fetch('http://localhost:3000/products')
         .then(response => response.json())
         .then(data => {
-            // Update the sneakers array with data from the backend
+            // Display the sneakers fetched from the backend
             displaySneakers(data);
         })
         .catch(err => {
@@ -30,32 +30,38 @@ function displaySneakers(filteredSneakers) {
 }
 
 // Add a sneaker to the cart
-function addToCart(id, name, price) {
-    const quantity = 1; // Default quantity
+function addToCart(productId, name, price) {
     fetch('http://localhost:3000/cart', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product_id: id, quantity })
+        body: JSON.stringify({ product_id: productId, quantity: 1 }) // Default quantity is 1
     })
         .then(response => response.text())
         .then(message => {
             console.log(message);
+            // Update the local cart with new item
             cart.push({ name, price });
             cartCount += 1;
             updateCart();
         })
-        .catch(err => {
-            console.error('Error adding to cart:', err);
-        });
+        .catch(err => console.error('Error adding to cart:', err));
 }
 
 // Update the cart display
 function updateCart() {
-    let cartList = document.getElementById('cart-list');
-    let total = cart.reduce((sum, item) => sum + item.price, 0);
-    cartList.innerHTML = cart.map(item => `<li>${item.name} - $${item.price}</li>`).join('');
-    document.getElementById('total-price').textContent = `Total: $${total}`;
-    document.getElementById('cart-count').innerText = cartCount;
+    fetch('http://localhost:3000/cart')
+        .then(response => response.json())
+        .then(cartItems => {
+            // Update cart display dynamically
+            const cartList = document.getElementById('cart-list');
+            const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            cartList.innerHTML = cartItems.map(item => `
+                <li>${item.name} - $${item.price} x ${item.quantity}</li>
+            `).join('');
+            document.getElementById('total-price').textContent = `Total: $${total}`;
+            document.getElementById('cart-count').innerText = cartItems.length;
+        })
+        .catch(err => console.error('Error fetching cart data:', err));
 }
 
 // Filter sneakers by category
@@ -89,5 +95,6 @@ function toggleCart() {
 // Add event listener for the search input
 document.getElementById('search-input').addEventListener('input', searchSneakers);
 
-// Fetch sneakers on page load
+// Initial fetch of sneakers and cart data
 fetchSneakers();
+updateCart();
