@@ -1,75 +1,100 @@
+let cart = [];
+let cartCount = 0;
 
-const sneakers = [
-    { name: 'Air Jordan 4 Fear', price: 210, img: 'https://img.stadiumgoods.com/jordan-air-jordan-4-fear_23056650_55951336_800.jpg', category: 'high-top' },
-    { name: 'Adidas Superstar Wales Bonner', price: 140, img: 'https://img.stadiumgoods.com/adidas-superstar-wales-bonner-white-croc_26684678_56222492_800.jpg', category: 'low-top' },
-    { name: 'Air Jordan 1 Travis Scott Medium Olive', price: 250, img: 'https://img.stadiumgoods.com/jordan-air-jordan-1-travis-scott-medium-olive_23139694_55271556_800.jpg', category: 'high-top' },
-    { name: 'Air Jordan 1 Low OG Travis Scott Velvet Brown', price: 200, img: 'https://img.stadiumgoods.com/jordan-air-jordan-1-low-og-travis-scott-velvet-brown_25525489_55951143_800.jpg', category: 'low-top' },
-    { name: 'Air Jordan 4 Retro SB Pine Green', price: 225, img: 'https://img.stadiumgoods.com/jordan-air-jordan-4-retro-sb-pine-green_19672569_44943978_800.jpg', category: 'high-top' },
-    { name: 'Adidas Samba OG Wmns Maroon Cream White', price: 120, img: 'https://img.stadiumgoods.com/adidas-samba-og-wmns-maroon-cream-white_22847015_48351810_800.jpg', category: 'low-top' },
-    { name: 'Air Jordan 1 Retro High OG Chicago Lost and Found', price: 300, img: 'https://img.stadiumgoods.com/jordan-air-jordan-1-retro-high-og-chicago-lost-and-found_18316489_45638476_800.jpg', category: 'high-top' },
-    { name: 'Nike Air Force 1 Low Tiffany and Co.', price: 400, img: 'https://img.stadiumgoods.com/nike-air-force-1-low-tiffany-and-co_19839241_45656788_800.jpg', category: 'low-top' },
-    { name: 'Air Jordan 1 Off-White Chicago', price: 900, img: 'https://img.stadiumgoods.com/jordan-the-10-air-jordan-1-off-white-chicago_12959919_43160165_800.jpg', category: 'high-top' },
-    { name: 'Nike Louis Vuitton Air Force 1 Low', price: 2500, img: 'https://img.stadiumgoods.com/nike-louis-vuitton-air-force-1-low-virgil-abloh-white-red_18769026_47679206_800.jpg', category: 'low-top' },
-    { name: 'Air Jordan 1 High OG Wmns Satin Bred', price: 350, img: 'https://img.stadiumgoods.com/jordan-air-jordan-1-high-og-wmns-satin-bred_20609219_47408884_800.jpg', category: 'high-top' },
-    { name: 'Nike SB Dunk Low eBay Sandy Bodecker', price: 400, img: 'https://www.stadiumgoods.com/en-us/shopping/sb-dunk-low-ebay-sandy-bodecker-19418462', category: 'low-top' },
-    { name: 'Nike SB What The Dunk', price: 600, img: 'https://img.stadiumgoods.com/nike-sb-what-the-dunk-what-the-dunk_13678138_42994253_2048.jpg', category: 'high-top' }
-];
+// Fetch sneakers data from the backend
+function fetchSneakers() {
+    fetch('http://localhost:3000/products')
+        .then(response => response.json())
+        .then(data => {
+            // Display the sneakers fetched from the backend
+            displaySneakers(data);
+        })
+        .catch(err => {
+            console.error('Error fetching products:', err);
+        });
+}
 
-let cart = []; 
-let cartCount = 0; 
-
-// display sneakers product grid
-function displaySneakers(filteredSneakers = sneakers) {
+// Display sneakers in the product grid
+function displaySneakers(filteredSneakers) {
     const productGrid = document.getElementById('product-grid');
     productGrid.innerHTML = filteredSneakers.map(sneaker => `
         <div class="col-md-4 mb-4 product card" data-name="${sneaker.name}">
-            <img src="${sneaker.img}" class="card-img-top" alt="${sneaker.name}">
+            <img src="${sneaker.image_url}" class="card-img-top" alt="${sneaker.name}">
             <div class="card-body">
                 <h5 class="card-title">${sneaker.name}</h5>
                 <p class="card-text">$${sneaker.price}</p>
-                <button class="btn btn-primary" onclick="addToCart('${sneaker.name}', ${sneaker.price})">Add to Cart</button>
+                <button class="btn btn-primary" onclick="addToCart(${sneaker.id}, '${sneaker.name}', ${sneaker.price})">Add to Cart</button>
             </div>
         </div>
     `).join('');
 }
 
-// add a sneaker to the cart
-function addToCart(name, price) {
-    cart.push({ name, price });
-    cartCount += 1;
-    updateCart();
+// Add a sneaker to the cart
+function addToCart(productId, name, price) {
+    fetch('http://localhost:3000/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: productId, quantity: 1 }) // Default quantity is 1
+    })
+        .then(response => response.text())
+        .then(message => {
+            console.log(message);
+            // Update the local cart with new item
+            cart.push({ name, price });
+            cartCount += 1;
+            updateCart();
+        })
+        .catch(err => console.error('Error adding to cart:', err));
 }
 
-//  update the cart display
+// Update the cart display
 function updateCart() {
-    let cartList = document.getElementById('cart-list');
-    let total = cart.reduce((sum, item) => sum + item.price, 0);
-    cartList.innerHTML = cart.map(item => `<li>${item.name} - $${item.price}</li>`).join('');
-    document.getElementById('total-price').textContent = `Total: $${total}`;
-    document.getElementById('cart-count').innerText = cartCount;
+    fetch('http://localhost:3000/cart')
+        .then(response => response.json())
+        .then(cartItems => {
+            // Update cart display dynamically
+            const cartList = document.getElementById('cart-list');
+            const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            cartList.innerHTML = cartItems.map(item => `
+                <li>${item.name} - $${item.price} x ${item.quantity}</li>
+            `).join('');
+            document.getElementById('total-price').textContent = `Total: $${total}`;
+            document.getElementById('cart-count').innerText = cartItems.length;
+        })
+        .catch(err => console.error('Error fetching cart data:', err));
 }
 
-//  filter sneakers by category
+// Filter sneakers by category
 function filterSneakers(category) {
-    const filteredSneakers = category === 'all' ? sneakers : sneakers.filter(sneaker => sneaker.category === category);
-    displaySneakers(filteredSneakers);
+    fetch(`http://localhost:3000/products/${category}`)
+        .then(response => response.json())
+        .then(data => displaySneakers(data))
+        .catch(err => console.error('Error filtering products:', err));
 }
 
-// search for sneakers by name
+// Search for sneakers by name
 function searchSneakers() {
     const searchTerm = document.getElementById('search-input').value.toLowerCase();
-    const searchResults = searchTerm ? sneakers.filter(sneaker => sneaker.name.toLowerCase().includes(searchTerm)) : sneakers;
-    displaySneakers(searchResults);
+    fetch('http://localhost:3000/products')
+        .then(response => response.json())
+        .then(data => {
+            const searchResults = searchTerm
+                ? data.filter(sneaker => sneaker.name.toLowerCase().includes(searchTerm))
+                : data;
+            displaySneakers(searchResults);
+        })
+        .catch(err => console.error('Error searching for products:', err));
 }
 
-// cart display
+// Cart display toggle
 function toggleCart() {
     const cartElement = document.getElementById('cart');
     cartElement.classList.toggle('active');
 }
 
-// search input
+// Add event listener for the search input
 document.getElementById('search-input').addEventListener('input', searchSneakers);
 
-// k; display of sneakers
-displaySneakers();
+// Initial fetch of sneakers and cart data
+fetchSneakers();
+updateCart();
