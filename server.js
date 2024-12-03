@@ -24,6 +24,7 @@ db.connect((err) => {
     console.log('Connected to MySQL Database!');
 });
 
+// Fetch all products
 app.get('/products', (req, res) => {
     db.query('SELECT * FROM products', (err, results) => {
         if (err) {
@@ -34,20 +35,40 @@ app.get('/products', (req, res) => {
     });
 });
 
-app.post('/cart', (req, res) => {
-    const { product_id, quantity } = req.body;
-    db.query('INSERT INTO cart (product_id, quantity) VALUES (?, ?)', [product_id, quantity], (err) => {
+// Fetch products by category
+app.get('/products/:category', (req, res) => {
+    const category = req.params.category;
+    db.query('SELECT * FROM products WHERE category = ?', [category], (err, results) => {
         if (err) {
-            res.status(500).send('Error adding to cart');
+            res.status(500).send('Error fetching products by category');
             return;
         }
-        res.send('Added to cart');
+        res.json(results);
     });
 });
 
+// Add product to the cart
+app.post('/cart', (req, res) => {
+    const { product_id, quantity } = req.body;
+    db.query(
+        'INSERT INTO cart (product_id, quantity) VALUES (?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?',
+        [product_id, quantity, quantity],
+        (err) => {
+            if (err) {
+                res.status(500).send('Error adding to cart');
+                return;
+            }
+            res.send('Added to cart');
+        }
+    );
+});
+
+// Fetch all cart items
 app.get('/cart', (req, res) => {
     db.query(
-        'SELECT c.id, p.name, p.price, c.quantity FROM cart c JOIN products p ON c.product_id = p.id',
+        `SELECT c.id, p.name, p.price, c.quantity, (p.price * c.quantity) AS total 
+         FROM cart c 
+         JOIN products p ON c.product_id = p.id`,
         (err, results) => {
             if (err) {
                 res.status(500).send('Error fetching cart data');
