@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <title>Cart</title>
+
+</head>
+
+<body>
+
+    <header>
+
+        <h1>Your Cart</h1>
+
+        <nav>
+
+            <a href="/">Home</a>
+
+            <a href="/shop">Shop</a>
+
+            <a href="/cart">Cart</a>
+
+        </nav>
+
+    </header>
+
+    <main>
+
+        <h2>Cart Items</h2>
+
+        <ul>
+
+            <% cart.forEach(item => { %>
+
+                <li><%= item.name %> - $<%= item.price %> x <%= item.quantity %></li>
+
+            <% }) %>
+
+        </ul>
+
+        <h3>Total: $<%= total %></h3>
+
+    </main>
+
+    <footer>
+
+        <p>&copy; 2024 Alibaba and the 40 Sneakers</p>
+
+    </footer>
+
+</body>
+
+</html>

@@ -14,8 +14,6 @@ function fetchSneakers() {
 
         .then(data => {
 
-            // Pass the data to the display function
-
             displaySneakers(data);
 
         })
@@ -30,7 +28,7 @@ function fetchSneakers() {
 
 
 
-// Display products dynamically on the page
+// Render the products into the HTML
 
 function displaySneakers(sneakers) {
 
@@ -60,7 +58,7 @@ function displaySneakers(sneakers) {
 
 
 
-// Add a product to the cart
+// Add an item to the cart
 
 function addToCart(productId, name, price) {
 
@@ -94,7 +92,7 @@ function addToCart(productId, name, price) {
 
 
 
-// Update cart display
+// Update the cart display
 
 function updateCart() {
 
@@ -126,36 +124,15 @@ function updateCart() {
 
 
 
-// Search for products
-
-function searchSneakers() {
-
-    const searchTerm = document.getElementById('search-input').value.toLowerCase();
-
-    fetch('http://localhost:3000/products')
-
-        .then(response => response.json())
-
-        .then(data => {
-
-            const searchResults = data.filter(sneaker => sneaker.name.toLowerCase().includes(searchTerm));
-
-            displaySneakers(searchResults);
-
-        })
-
-        .catch(err => console.error('Error searching for products:', err));
-
-}
-
-
-
-// Add event listener for search
+// Add event listener for the search input
 
 document.getElementById('search-input').addEventListener('input', searchSneakers);
 
 
 
-// Fetch products on page load
+// Fetch products and cart data on load
 
 fetchSneakers();
+
+updateCart();
+

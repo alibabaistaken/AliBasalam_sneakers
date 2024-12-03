@@ -1,84 +1,167 @@
 const express = require('express');
+
 const mysql = require('mysql');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+
+const path = require('path');
+
+
 
 const app = express();
-const port = 3000;
 
-app.use(bodyParser.json());
-app.use(cors());
+const port = 8008;
+
+
+
+// Set up EJS as the templating engine
+
+app.set('view engine', 'ejs');
+
+
+
+// Middleware for parsing form data
+
+app.use(express.urlencoded({ extended: false }));
+
+
+
+// Serve static files (CSS, images, JavaScript)
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+
+// MySQL Connection
 
 const db = mysql.createConnection({
+
     host: 'localhost',
+
     user: 'root',
-    password: '', // Add your MySQL password here if any
+
+    password: '', // Add your MySQL password if any
+
     database: 'sneakers_shop'
+
 });
+
+
 
 db.connect((err) => {
+
     if (err) {
+
         console.error('Database connection failed: ', err);
+
         return;
+
     }
+
     console.log('Connected to MySQL Database!');
+
 });
 
-// Fetch all products
-app.get('/products', (req, res) => {
+
+
+// Routes
+
+
+
+// Home Page
+
+app.get("/", (req, res) => {
+
+    res.render("index");
+
+});
+
+
+
+// Shop Page
+
+app.get("/shop", (req, res) => {
+
     db.query('SELECT * FROM products', (err, results) => {
+
         if (err) {
+
+            console.error('Error fetching products:', err);
+
             res.status(500).send('Error fetching products');
+
             return;
+
         }
-        res.json(results);
+
+        res.render("shop", { products: results });
+
     });
+
 });
 
-// Fetch products by category
-app.get('/products/:category', (req, res) => {
-    const category = req.params.category;
-    db.query('SELECT * FROM products WHERE category = ?', [category], (err, results) => {
-        if (err) {
-            res.status(500).send('Error fetching products by category');
-            return;
-        }
-        res.json(results);
-    });
-});
 
-// Add product to the cart
-app.post('/cart', (req, res) => {
-    const { product_id, quantity } = req.body;
+
+// Cart Page
+
+app.get("/cart", (req, res) => {
+
     db.query(
-        'INSERT INTO cart (product_id, quantity) VALUES (?, ?) ON DUPLICATE KEY UPDATE quantity = quantity + ?',
-        [product_id, quantity, quantity],
-        (err) => {
-            if (err) {
-                res.status(500).send('Error adding to cart');
-                return;
-            }
-            res.send('Added to cart');
-        }
-    );
-});
 
-// Fetch all cart items
-app.get('/cart', (req, res) => {
-    db.query(
-        `SELECT c.id, p.name, p.price, c.quantity, (p.price * c.quantity) AS total 
-         FROM cart c 
-         JOIN products p ON c.product_id = p.id`,
+        'SELECT c.id, p.name, p.price, c.quantity FROM cart c JOIN products p ON c.product_id = p.id',
+
         (err, results) => {
+
             if (err) {
+
+                console.error('Error fetching cart data:', err);
+
                 res.status(500).send('Error fetching cart data');
+
                 return;
+
             }
-            res.json(results);
+
+            const totalPrice = results.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+            res.render("cart", { cart: results, total: totalPrice });
+
         }
+
     );
+
 });
+
+
+
+// API for adding to cart
+
+app.post("/add-to-cart", (req, res) => {
+
+    const { product_id, quantity } = req.body;
+
+    db.query('INSERT INTO cart (product_id, quantity) VALUES (?, ?)', [product_id, quantity], (err) => {
+
+        if (err) {
+
+            console.error('Error adding to cart:', err);
+
+            res.status(500).send('Error adding to cart');
+
+            return;
+
+        }
+
+        res.redirect('/shop'); // Redirect back to the shop page
+
+    });
+
+});
+
+
+
+// Start the server
 
 app.listen(port, () => {
+
     console.log(`Server running on http://localhost:${port}`);
+
 });
